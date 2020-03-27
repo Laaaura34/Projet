@@ -1,0 +1,81 @@
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Scanner;
+
+public class ThreadClient implements Runnable {
+	private Socket socket;
+	private ServerSocket serverSocket;
+	PrintWriter out;
+	
+	public ThreadClient(ServerSocket s){
+		this.serverSocket=s;
+	}	
+	
+	String[] tab = {"Voiture","Chaise","Cahier","Ordinateur","Oreiller","Lavabo","Chat","Trousse","Cadre","Travail"};
+
+	
+	public void run() {
+		Socket[] Client = new Socket[50];
+		PrintWriter[] flux = new PrintWriter[50];
+		int  nbClients =0;
+		while (true)
+			
+			try {
+				socket = serverSocket.accept();
+				socket.notifyAll();
+				System.out.println("Connexion");
+				Thread R = new Thread(new Runnable() {
+					PrintWriter out;
+					BufferedReader in;
+					String reponse;
+					
+					public void run() {
+						Scanner s = new Scanner(System.in);
+						try {
+							in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+							out = new PrintWriter(socket.getOutputStream());
+
+							String mot = this.getTab();
+							out.println(mot);
+							reponse = in.readLine();
+							
+							while (true) {
+								for(int j =0; j <5; j++) {
+									 String scn = s.nextLine();
+									out.println(scn);
+									String message = in.readLine();
+									System.out.println(message);
+								for(int i=0; i<Client.length;i++) {
+										System.out.println(flux[i]);
+										out= new PrintWriter(flux[i]);
+									
+									out.println(message);
+									out.flush();
+								}
+								}
+							}
+						} catch (IOException e ) {
+							System.out.println("Déconnexion");
+						}
+					
+						
+					}
+					public String getTab() {
+						int random =(int) (Math.random()*tab.length);
+						return tab[random];
+				
+					}
+					
+				});
+				R.start();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+	}
+}
+
