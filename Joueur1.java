@@ -10,23 +10,27 @@ import java.net.Socket;
 
 import projet.serveurclient.WriterThread;
 
-public class Eleve1 {
-	static final int port= 6148;
-	
+public class Joueur1 {
+	static final int port= 8000;
+	static int local;
+					
 		public static void main (String[] args) throws IOException {
 			Socket socket= new Socket ("127.0.0.1", port);
 			System.out.println("SOCKET =" + socket);
 			
+			local=socket.getLocalPort();
+			
 			BufferedReader bw = new BufferedReader (new InputStreamReader(socket.getInputStream()));
 			PrintWriter out= new PrintWriter(new BufferedWriter( new OutputStreamWriter (socket.getOutputStream())),true);
-
-	
-				Thread Envoie = new Thread(new WriterThread(out));
-				Envoie.start();
 			
-				while(true) {
-					System.out.println(bw.readLine());
-				}
+			
+			// Lancement du Thread 'WriterThread'
+			Thread Envoie = new Thread(new WriterThread(out));
+			Envoie.start();
+			
+			while(true) {
+				System.out.println(bw.readLine());
+			}
 	
 		}
 }
