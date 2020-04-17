@@ -64,7 +64,7 @@ public class ThreadClient extends Thread {
 	
 		}		
 		
-		// Fonction qui recherche si le mot but est égal au message. Elle renvoie un entier.
+		// Fonction qui recherche si le mot but est égal au message. Elle renvoie un boolean.
 		public boolean comparaison(String Mot, String Texte) {
 			String [] lesMots=Texte.split("\\p{javaWhitespace}+");
 			boolean trouve = false;
