@@ -3,10 +3,7 @@ package projet.serveurclient;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,44 +14,52 @@ import java.util.Scanner;
 import java.util.Set;
 import projet.serveurclient.Joueur1;
 
-public class ThreadClient extends Thread {
+//ThreadClient1.java :  spécifique du Joueur 1 qui comprend plusieurs fonction permettant l'envoie du message 
+//au joueur2.
+//Comprend les fonctions suivantes : 
+// -> Supression de 30 % de caractères.
+// -> Envoi d'un mot-but au Joueur 1 que celui-ci devra faire deviner au joueur 2.
+
+
+public class ThreadClient1 extends Thread {
 	private Socket socket1, socket2;
-	private ServerSocket serverSocket;
-	private ObjectOutputStream writer;
-	private ObjectInputStream reader;
-	public String mot;
-	private int local1;
+	public  String mot;
+	public static String lemot;
 	
-	public ThreadClient(Socket socket1, Socket socket2) throws Exception{
+	public ThreadClient1(Socket socket1, Socket socket2) throws Exception{
 		this.socket1=socket1;
 		this.socket2=socket2;
 	}	
 	// Liste de mots-but
-	String[] tab = {"Voiture","Chaise","Cahier","Ordinateur","Oreiller","Lavabo","Chat","Trousse","Cadre","Travail"};
+	String[] tab = {"Voiture","Chaise","Cahier","Ordinateur","Oreiller","Lavabo","Chat","Trousse","Cadre","Mathématique"};
 	
 	public void run() {	
 		Scanner s = new Scanner(System.in);
 		int i=0;
-		local1= socket1.getLocalPort();
 		StringBuilder message = null;
 			try {
 					BufferedReader bw = new BufferedReader(new InputStreamReader(socket1.getInputStream()));
-					PrintWriter out = new PrintWriter(socket2.getOutputStream(),true);
-					PrintWriter out1 = new PrintWriter(socket1.getOutputStream(),true);
+					BufferedReader bw1 = new BufferedReader( new InputStreamReader(socket2.getInputStream()));
+					PrintWriter out = new PrintWriter(socket1.getOutputStream(),true);
+					PrintWriter out1 = new PrintWriter(socket2.getOutputStream(),true);
 					
-					// if si le local port == local port du J1
-					// Renvoie le mot-but au client.
-					String mot1 = "Le mot à découvrir est : " ;
-					String lemot = this.getTab();
+					// Renvoie le mot-but au joueur 1.
+					String mot1 = "Le mot à faire découvrir est : " ;
+					lemot = this.getTab();
 					mot = mot1 + lemot;
-					if(local1 == Joueur1.local ) { 
-						out1.println(mot);
-					} 
+					out.println( mot);
 					
-					//Renvoie au client le message écrit du client 1 au client 2 avec les 30% de caractères en moins. 
+					
+					//Renvoie au Joueur 2 le message écrit du client 1 avec les 30% de caractères en moins. 
+					String J1 = "Reçu de Joueur 1 : ";
 					while(true) {
+						while(i<5) {
 						message=getSuppr(bw.readLine());
-						out.println(message);
+						out1.println(J1 + message);
+						i++;
+						}
+						
+				
 					}
 					
 			}catch (IOException e ) {
@@ -64,28 +69,20 @@ public class ThreadClient extends Thread {
 	
 		}		
 		
-		// Fonction qui recherche si le mot but est égal au message. Elle renvoie un boolean.
-		public boolean comparaison(String Mot, String Texte) {
-			String [] lesMots=Texte.split("\\p{javaWhitespace}+");
-			boolean trouve = false;
-			for (int i=0; i<lesMots.length;i++) {
-				if(lesMots[i].equals(Mot)) {
-					trouve=true;
-				}
-			}
-			return trouve;
-		}
-	
-	
 		//Fonction qui renvoie aléatoirement un mot but choisi dans une liste de mot. 
 		public String getTab() {
 					int random =(int) (Math.random()*tab.length);
 					return tab[random];
 				
 		}
+		public String getLeMot() {
+			return getTab();
+		}
+		
+		
 		//Fonction qui supprime 30% des caractères de la phrases écrite
 		public StringBuilder getSuppr(String str) {
-			int trs= str.length();
+			int trs= str.replaceAll(" ", "").length();
 			int calcul = trs - ((int) (trs*0.3));
 			
 			//Met nombres aléatoires dans une liste
@@ -99,8 +96,8 @@ public class ThreadClient extends Thread {
 					Set set = new HashSet() ;
 			        set.addAll(liste) ;
 			        liste = new ArrayList(set) ;   
-
-			}			
+				}	
+				
 			// Trie la liste par ordre croissant    
 			Collections.sort(liste);		
 
