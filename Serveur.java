@@ -1,14 +1,18 @@
 package projet.serveurclient;
 
+//Serveur.java : Classe serveur qui permet le lancement et la synchronisation des ThreadClient 1 et 2.
+//Le serveur attend que les 2 joueurs se connectent afin de pouvoir les accepter et démarrer la communication.
+//Il peut gérer plusieurs communications clientes à la fois grâce au Multithreading.
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+// Appel de la classe ThreadClient1.java
 import projet.serveurclient.ThreadClient1;
 
-//Serveur.java : Classe serveur qui permet le lancement et la synchronisation des ThreadClient 1 et 2.
-//Le serveur attend que les 2 joueurs se connectent afin de pouvoir les accepter et démarrer la communication.
-//Il peut gérer plusieurs communications clientes à la fois grâce au Multithreading.
+//Appel de la classe ThreadClient2.java
+import projet.serveurclient.ThreadClient2;
 
 public class Serveur {
 	String hostName ="127.0.0.1";
@@ -27,23 +31,23 @@ public class Serveur {
 				//Connexion du Joueur1
 				Socket soc1;
 				soc1=s.accept();
-			System.out.println("Nouveau Joueur 1 connecté: "+soc1);
+			System.out.println("Joueur 1 connecté: "+soc1);
 			
 			
 				//Connexion du Joueur2
 				Socket soc2;
 				soc2=s.accept();
-			System.out.println("Nouveau Joueur 2 connecté: "+soc2);
-			
+			System.out.println("Joueur 2 connecté: "+soc2);
 			
 				//Lancement des threads grâce à la classe ThreadClient
 				new ThreadClient1(soc1,soc2).start();
 				new ThreadClient2(soc1,soc2).start();
-				
+			
 			}
+			
 		}catch(IOException e){
 			e.printStackTrace();
 		}
 	}
 	
-}		
+}
